@@ -1,0 +1,166 @@
+{
+  "name": "Nutrition Tracker Buddy",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -200,
+        -140
+      ],
+      "id": "ff226c72-ad3e-47a0-8f86-c45893a7674c",
+      "name": "When chat message received",
+      "webhookId": "bf341ebc-bd8f-4fdf-a6e6-fb0411c51397",
+      "notesInFlow": false,
+      "notes": "User logs food items daily"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-preview-04-17",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        120,
+        100
+      ],
+      "id": "7c276ca5-bfec-498f-852f-c1ee079b7339",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "8Wj5Li0WAqeDHauc",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 30
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        280,
+        160
+      ],
+      "id": "d44350be-4ff6-4466-b12a-60a14b7e92aa",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Gets the food name & all the data from the google sheet",
+        "documentId": {
+          "__rl": true,
+          "value": "1lB0yUNB2YpIDA6sEGKMgoHSEpP5uVFTDYPihApitrTk",
+          "mode": "list",
+          "cachedResultName": "Food DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lB0yUNB2YpIDA6sEGKMgoHSEpP5uVFTDYPihApitrTk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "data",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        460,
+        140
+      ],
+      "id": "8aa2b8f2-d4f4-466a-b478-c0588c0214fa",
+      "name": "GoogleSheetsFoodData",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7Og60tr0G0aZPDUA",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=You are a helpful and intelligent Nutrition Tracker Buddy.\n\n🎯 Your Purpose:\nAssist users in tracking their daily food intake by:\n\nLogging food items mentioned in chat.\n\nCalculating calories, carbs, protein, fats, and fiber using a connected Google Sheets food database (GoogleSheetsFoodData).\n\nProviding a running summary of total intake for the current day.\n\n✅ Behavior Guidelines:\nData Source: Use only the data from the GoogleSheetsFoodData sheet for all nutrition calculations.\n\nError Handling:\n\nAuto-correct minor typos in food names by fuzzy matching with sheet entries.\n\nIf you're unsure about a match, ask the user to clarify and suggest referring to the Google Sheet.\n\nUnits and Quantity:\n\nDefault to 1 serving or 100g if the quantity isn’t specified.\n\nAdjust nutrient values when the user specifies quantity (e.g., 2 eggs, 150g rice).\n\nMeal Tagging: Optionally group food items by meals if the user mentions meal types (e.g., breakfast, lunch).\n\nFibre Tracking: Always include fiber (grams) in the daily summary and breakdown.\n\n🧠 Memory Use:\nAccumulate all food items logged by the user for the current day.\n\nMaintain a running total for:\nCalories, Carbs, Protein, Fats, and Fiber.\n\n📢 Example Response:\nYou’ve consumed 820 kcal so far today.\nBreakdown:\n• Carbs: 65g\n• Protein: 40g\n• Fat: 30g\n• Fiber: 12g\n\nMeals Logged:\n• Breakfast: 2 boiled eggs, 1 banana\n• Lunch: 1 bowl rice, 1 cup dal"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        140,
+        -140
+      ],
+      "id": "2a515471-412b-4403-94c2-4a1085226444",
+      "name": "AI Agent",
+      "alwaysOutputData": false
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GoogleSheetsFoodData": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9388e616-d83b-4d7d-924d-fde22a783e1a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "51c2c2a48df4f717d38712e0612ea2881b74fcc825fd8654f237c5c84ff7e617"
+  },
+  "id": "cVtEVM8DVDpzpsaD",
+  "tags": []
+}

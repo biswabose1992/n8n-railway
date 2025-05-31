@@ -9,7 +9,7 @@ ENV WEBHOOK_URL="http://localhost:5678"
 # Or your preferred timezone
 ENV GENERIC_TIMEZONE="Europe/London"
  # Set default to postgres
-ENV DB_TYPE=postgres
+ENV DB_TYPE=postgresdb
 # Recommended for managing disk space
 ENV EXECUTIONS_DATA_PRUNE=true
 # Prune executions older than 14 days (e.g., 14*24 = 336 hours)
